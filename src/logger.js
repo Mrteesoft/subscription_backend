@@ -3,7 +3,6 @@ const { createLogger, format, transports } = require('winston');
 const consoleFormat = format.printf(
   ({ timestamp, level, message, stack, status, method, path, durationMs, userId, ...rest }) => {
     const orderedMeta = {
-      status,
       method,
       path,
       duration: durationMs != null ? `${durationMs}ms` : undefined,
@@ -15,8 +14,9 @@ const consoleFormat = format.printf(
       .filter(([, value]) => value !== undefined && value !== null)
       .map(([key, value]) => `${key}=${value}`);
 
+    const statusLabel = status != null ? `[${status}] ` : '';
     const details = metaParts.length ? ` | ${metaParts.join(' ')}` : '';
-    const base = `${timestamp} ${level.toUpperCase()} ${message}${details}`;
+    const base = `${timestamp} ${level.toUpperCase()} ${statusLabel}${message}${details}`;
 
     return stack ? `${base}\n${stack}` : base;
   }
