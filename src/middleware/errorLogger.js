@@ -2,7 +2,7 @@ const logger = require('../logger');
 
 function errorLogger(err, req, res, next) {
   const status = err.statusCode || res.statusCode || 500;
-  logger.error(`HTTP ${status} ${req.method} ${req.originalUrl}`, {
+  logger.error('Request error', {
     status,
     method: req.method,
     path: req.originalUrl,

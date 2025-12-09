@@ -1,15 +1,26 @@
 const { createLogger, format, transports } = require('winston');
 
-const consoleFormat = format.printf(({ timestamp, level, message, stack, ...meta }) => {
-  const metaParts = Object.entries(meta)
-    .filter(([, value]) => value !== undefined && value !== null)
-    .map(([key, value]) => `${key}=${value}`);
+const consoleFormat = format.printf(
+  ({ timestamp, level, message, stack, status, method, path, durationMs, userId, ...rest }) => {
+    const orderedMeta = {
+      status,
+      method,
+      path,
+      duration: durationMs != null ? `${durationMs}ms` : undefined,
+      user: userId,
+      ...rest,
+    };
 
-  const details = metaParts.length ? ` | ${metaParts.join(' ')}` : '';
-  const base = `${timestamp} ${level.toUpperCase()} ${message}${details}`;
+    const metaParts = Object.entries(orderedMeta)
+      .filter(([, value]) => value !== undefined && value !== null)
+      .map(([key, value]) => `${key}=${value}`);
 
-  return stack ? `${base}\n${stack}` : base;
-});
+    const details = metaParts.length ? ` | ${metaParts.join(' ')}` : '';
+    const base = `${timestamp} ${level.toUpperCase()} ${message}${details}`;
+
+    return stack ? `${base}\n${stack}` : base;
+  }
+);
 
 const logger = createLogger({
   level: process.env.LOG_LEVEL || 'info',

@@ -6,7 +6,7 @@ function requestLogger(req, res, next) {
   res.on('finish', () => {
     const duration = Date.now() - start;
     const status = res.statusCode;
-    logger.info(`HTTP ${status} ${req.method} ${req.originalUrl}`, {
+    logger.info('Request completed', {
       status,
       method: req.method,
       path: req.originalUrl,
