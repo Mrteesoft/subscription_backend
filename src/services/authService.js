@@ -14,40 +14,35 @@ class AuthService {
       throw httpError.badRequest('email is required');
     }
 
-    const existing = this.usersByEmail.get(email);
+    const normalizedEmail = email.toLowerCase();
+    const existing = this.usersByEmail.get(normalizedEmail);
+
     if (existing) {
-      return { ...existing };
+      return existing;
     }
 
-    const user = {
-      id: `user-${this.idCounter++}`,
-      email,
-    };
-
-    this.usersByEmail.set(email, user);
+    const user = { id: `user-${this.idCounter++}`, email: normalizedEmail };
+    this.usersByEmail.set(normalizedEmail, user);
     this.usersById.set(user.id, user);
-
-    return { ...user };
+    return user;
   }
 
-  findById(id) {
-    if (!id) return null;
-    const user = this.usersById.get(id);
-    return user ? { ...user } : null;
+  findById(userId) {
+    return this.usersById.get(userId);
   }
 
   createToken(user) {
-    if (!user || !user.id) {
-      throw httpError.badRequest('valid user required to create token');
-    }
-
-    const payload = { sub: user.id };
-    return jwt.sign(payload, this.jwtSecret, { expiresIn: '1h' });
+    return jwt.sign(
+      { sub: user.id, email: user.email },
+      this.jwtSecret,
+      { expiresIn: '1h' }
+    );
   }
 
   login(email) {
     const user = this.getOrCreateUser(email);
     const token = this.createToken(user);
+
     return { user, token };
   }
 

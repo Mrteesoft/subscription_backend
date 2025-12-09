@@ -5,13 +5,12 @@ function requestLogger(req, res, next) {
 
   res.on('finish', () => {
     const duration = Date.now() - start;
-    const status = res.statusCode;
-    logger.info('Request completed', {
-      status,
+    logger.info('request completed', {
       method: req.method,
       path: req.originalUrl,
+      status: res.statusCode,
       durationMs: duration,
-      userId: req.user?.id || undefined,
+      userId: req.user?.id || null,
     });
   });
 

@@ -9,7 +9,7 @@ function authMiddleware(req, _res, next) {
     return next(httpError.unauthorized('Authorization header missing or invalid'));
   }
 
-  const token = header.slice('Bearer '.length).trim();
+  const token = header.slice('Bearer '.length);
 
   try {
     const payload = authService.verifyToken(token);

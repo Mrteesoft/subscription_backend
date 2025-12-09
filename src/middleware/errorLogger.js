@@ -1,14 +1,13 @@
 const logger = require('../logger');
 
 function errorLogger(err, req, res, next) {
-  const status = err.statusCode || res.statusCode || 500;
-  logger.error('Request error', {
-    status,
+  logger.error('request error', {
     method: req.method,
     path: req.originalUrl,
+    status: res.statusCode,
     message: err.message,
     stack: err.stack,
-    userId: req.user?.id || undefined,
+    userId: req.user?.id || null,
   });
 
   next(err);

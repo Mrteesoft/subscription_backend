@@ -3,7 +3,7 @@ const { httpError } = require('../utils/errors');
 class SubscriptionService {
   constructor({ defaultBalance = 5 } = {}) {
     this.defaultBalance = defaultBalance;
-    this.subscriptions = new Map(); // userId -> { userId, balance }
+    this.subscriptions = new Map();
   }
 
   createSubscription(userId) {
@@ -14,11 +14,7 @@ class SubscriptionService {
       return this.#clone(existing);
     }
 
-    const record = {
-      userId,
-      balance: this.defaultBalance,
-    };
-
+    const record = { userId, balance: this.defaultBalance };
     this.subscriptions.set(userId, record);
     return this.#clone(record);
   }
@@ -38,15 +34,17 @@ class SubscriptionService {
     this.#assertUserId(userId);
 
     const record = this.subscriptions.get(userId);
+
     if (!record) {
       throw httpError.notFound('Subscription not found');
     }
 
     if (record.balance <= 0) {
-      throw httpError.badRequest('No remaining video balance');
+      throw httpError.badRequest('No videos remaining', 'NO_BALANCE');
     }
 
     record.balance -= 1;
+    this.subscriptions.set(userId, record);
     return this.#clone(record);
   }
 
