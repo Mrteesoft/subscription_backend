@@ -15,10 +15,10 @@ const consoleFormat = format.printf(
       .map(([key, value]) => `${key}=${value}`);
 
     const statusLabel = status != null ? `[${status}] ` : '';
-    const base = `${statusLabel}${timestamp} ${level.toUpperCase()} ${message}`;
     const details = metaParts.length ? ` | ${metaParts.join(' ')}` : '';
+    const base = `${timestamp} ${level.toUpperCase()} ${statusLabel}${message}${details}`;
 
-    return stack ? `${base}${details}\n${stack}` : `${base}${details}`;
+    return stack ? `${base}\n${stack}` : base;
   }
 );
 
